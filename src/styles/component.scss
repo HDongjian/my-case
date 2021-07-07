@@ -5,10 +5,23 @@ $headerHeight:60px;
   line-height: $headerHeight;
   padding: 0 15px;
   background: $--color-primary;
-
+  overflow: hidden;
   h2 {
     font-size: 18px;
     color: #fff;
+    float: left;
+  }
+  .el-menu{
+    float: right;
+    background-color: transparent;
+    .el-menu-item{
+      color:#fff;
+    }
+  }
+  .el-menu--horizontal {
+    > .el-menu-item{
+      box-sizing: border-box;
+    }
   }
 }
 
@@ -92,4 +105,11 @@ $headerHeight:60px;
       }
     }
   }
+}
+
+.day-error-item{
+  height: 30px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
 }
