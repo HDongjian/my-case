@@ -177,6 +177,8 @@
               return String(year)
             case 'mouth':
               return String(month)
+            case 'M':
+              return String(month)
             case 'MM':
               return String(month).padStart(2, '0')
             case 'D':

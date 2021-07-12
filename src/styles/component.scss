@@ -1,3 +1,7 @@
+.bg-light{
+  background-color: rgba(255, 106, 0,.1);
+}
+
 $headerHeight:60px;
 
 .my-header {
@@ -65,14 +69,33 @@ $headerHeight:60px;
 .journal {
   .layout-content {
     background: #fff;
+    .table{
+      .el-table__expanded-cell{
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+      .el-form-item{
+        display: flex;
+        margin-bottom: 4px;
+        .el-form-item__label{
+          float: inherit;
+        }
+        .el-form-item__content{
+          flex:1;
+        }
+      }
+    }
+    .dd-div{
+      width: 80%;
+    }
     .dd-p{
       display: flex;
-      >span{
-        flex: 4;
+      span.time{
+        width: 150px;
       }
       span.flag{
-        flex: 2;
-        text-align: center;
+        width: 80px;
+        text-align: left;
       }
       .copy{
         display: inline-block;

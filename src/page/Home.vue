@@ -10,7 +10,7 @@
               <div class="links">
                 <el-collapse accordion>
                   <el-collapse-item :title="link.title" :name="k" v-for="(link,k) in item.links" :key="i+'_'+k">
-                    <h5 slot="title">{{link.title}} <span @click.stop="go(link)">前往</span> </h5>
+                    <h5 @click.stop="go(link)" slot="title">{{link.title}}</h5>
                     <p>{{link.description}}</p>
                   </el-collapse-item>
                 </el-collapse>
@@ -131,6 +131,9 @@ export default {
         font-weight: bold;
       }
       h5 {
+        &:hover{
+          color: #ff6a00;
+        }
         span {
           font-size: 12px;
           font-weight: normal;

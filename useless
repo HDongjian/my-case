@@ -1,0 +1,66 @@
+  <el-table-column v-if="resultList.length>1" align="center" prop="考勤结果" label="考勤结果" min-width="100">
+    <el-table-column :key="i" v-for="(item,i) in resultList" :prop="item.key" align="center" :label="item.name" width="120"></el-table-column>
+  </el-table-column>
+
+importClock (e) {
+  this.showTable = true
+  var f = e.target.files[0]
+  this.form.clock = f.name
+  this.$biz.readExcel(f, data => {
+    console.log(data)
+    this.resultList = []
+    let resultList = []
+    let totalMap = {}; let nameKey = ''; let anaomalrKey = ''
+    for (let i = 0; i < data.length; i++) {
+      const element = data[i]
+      if (i === 0) {
+        let keys = Object.keys(element)
+        if (keys.length === 1) {
+          nameKey = keys[0]
+        }
+      }
+      if (i === 2) {
+        for (const key in element) {
+          let count = key.substring(key.length - 2)
+          if (count >= 34) {
+            resultList.push(key)
+            this.resultList.push({ name: element[key], key })
+          }
+        }
+      }
+      if (i <= 2) {
+        for (const key in element) {
+          if (isNaN(element[key])) {
+            if (element[key] === '考勤结果') {
+              anaomalrKey = key
+            }
+            totalMap[key] = element[key]
+          }
+        }
+      }
+    }
+    this.users = this.users.map(item => {
+      let ji = data.find((o) => o[nameKey] === item['姓名'])
+      if (!ji) return item
+      item['考勤情况'] = []
+      if (resultList.length === 1) {
+        if (ji[anaomalrKey] && ji[anaomalrKey] !== '正常') {
+          item['考勤情况'].push(ji[anaomalrKey])
+          item['考勤结果'] = ji[anaomalrKey]
+        }
+      }
+      for (const key in ji) {
+        if (resultList.includes(key)) {
+          if (ji[key] !== '正常' && ji[key] !== '休息') { item[key] = ji[key] }
+        }
+        if (this.anormalError.includes(totalMap[key])) {
+          item['考勤情况'].push({ key: totalMap[key], value: ji[key] })
+        }
+      }
+      // item['考勤情况'] = item['考勤情况'].join('；')
+      return item
+    })
+    console.log(this.users)
+    this.showTable = false
+  })
+},

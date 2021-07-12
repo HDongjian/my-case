@@ -38,6 +38,7 @@ export default {
 
         return rsMap
       },
+      // this.$biz.openDownloadDialog(this.$biz.sheet2blob(sheet), `${this.$lib.dateFormate(new Date(this.form.date), 'YYYY-MM-DD')}考勤日志统计-${this.$lib.dateFormate(new Date(), 'YYYY年MM月DD日 HH时mm分ss秒')}.xlsx`)
       sheet2blob (sheet, sheetName) {
         sheetName = sheetName || 'sheet1'
         var workbook = {
@@ -99,6 +100,20 @@ export default {
           k = k + 24 * 60 * 60 * 1000
         }
         return arr
+      },
+      dealMTXName (name) {
+        if (!/^[u4e00-u9fa5]|_{0,1}(\d{8})-(\d{8})/.test(name)) return []
+        let start = RegExp.$1; let end = RegExp.$2
+        start = Vue.biz.dealNumberDate(start)
+        end = Vue.biz.dealNumberDate(end)
+        let dates = Vue.biz.getAllDates(start, end)
+        return dates.map(item => {
+          return Vue.lib.dateFormate(new Date(item), 'YYYY-MM-DD')
+        })
+      },
+      dealNumberDate (number) {
+        let result = [number.substring(0, 4), number.substring(4, 6), number.substring(6, 8)]
+        return result.join('-')
       }
     }
   }
