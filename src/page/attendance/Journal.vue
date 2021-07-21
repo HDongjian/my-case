@@ -1,6 +1,6 @@
 <template>
   <div class="journal layout">
-    <my-header :title="$route.meta.title" :menus="menus"></my-header>
+    <my-header :title="$route.meta.title" :menus="$store.state.atTmenus"></my-header>
     <div class="layout-content">
       <el-form :inline="true" :model="form" class="journal-form">
         <el-form-item label="日期">
@@ -65,6 +65,7 @@
               <template slot-scope="{row}">{{dealReslultList(row['考勤情况'])}}
               </template>
             </el-table-column>
+            <el-table-column align="center" prop="考勤结果" label="考勤结果" width="200"></el-table-column>
             <el-table-column align="center" prop="打卡" label="打卡地址" width="340"></el-table-column>
             <el-table-column align="center" prop="未写日志明细" label="未写日志明细" width="200">
               <template slot-scope="{row}" v-if="row['未写日志明细']">{{$lib.dateFormate(new Date(form.date), 'M/DD')}}</template>
@@ -81,7 +82,7 @@ import XLSX from 'xlsx'
 export default {
   path: '/journal',
   name: 'journal',
-  title: '每日考勤日志管理',
+  title: '每日打卡日志统计',
   data () {
     return {
       menus: [{
@@ -140,7 +141,7 @@ export default {
     },
     initDate () {
       // this.form.date = '2021-06-10'
-      // let today = new Date('2021-06-23')
+      // let today = new Date('2021-06-10')
       let today = new Date()
       let week = today.getDay()
       if (week === 1) {
@@ -200,8 +201,8 @@ export default {
             item['日志明细'] = []
             if (jis && jis.length) {
               let t = item['上班时间']
-              let end = new Date(this.$lib.dateFormate(this.form.date, 'YYYY-MM-DD') + ' ' + t).getTime()
-              let start = end - (this.form.day || 1) * 24 * 60 * 60 * 1000
+              let start = new Date(this.$lib.dateFormate(this.form.date, 'YYYY-MM-DD') + ' ' + t).getTime()
+              let end = start + (this.form.day || 1) * 24 * 60 * 60 * 1000
               for (const ji of jis) {
                 let ft = ji['最后一次修改时间']
                 if (!ft) continue
@@ -276,12 +277,12 @@ export default {
           if (!ji) return item
           item['考勤情况'] = []
           // console.log(ji[anaomalrKey])
+          item['考勤结果'] = ji[anaomalrKey]
           if (ji[anaomalrKey] && ji[anaomalrKey] !== '正常') {
-            item['考勤结果'] = ji[anaomalrKey]
-          }
-          for (const key in ji) {
-            if (this.anormalError.includes(totalMap[key])) {
-              item['考勤情况'].push({ key: totalMap[key], value: ji[key] })
+            for (const key in ji) {
+              if (this.anormalError.includes(totalMap[key])) {
+                item['考勤情况'].push({ key: totalMap[key], value: ji[key] })
+              }
             }
           }
           return item
@@ -330,6 +331,21 @@ export default {
         if (item.key === '下班缺卡次数') {
           result.push('下班无记录')
         }
+        if (item.key === '旷工天数') {
+          result.push(`旷工${item.value}天`)
+        }
+        if (item.key === '严重迟到时长') {
+          result.push(`严重迟到${item.value}`)
+        }
+        if (item.key === '旷工迟到天数') {
+          result.push(`旷工迟到${item.value}天`)
+        }
+        if (item.key === '出差时长') {
+          result.push(`出差${item.value}小时`)
+        }
+        if (item.key === '外出时长') {
+          result.push(`外出${item.value}小时`)
+        }
       }
       if (result.length) {
         return this.$lib.dateFormate(this.form.date, 'M/DD') + result.join('、')
@@ -338,7 +354,10 @@ export default {
       //
     },
     cellStyle ({ row, column, rowIndex, columnIndex }) {
-      if (row['考勤结果'] && columnIndex === 3) {
+      if (row['考勤情况'] && row['考勤情况'].length && columnIndex === 3) {
+        return 'background-color: rgba(255, 106, 0,.1);'
+      }
+      if (row['考勤结果'] && row['考勤结果'] !== '正常' && columnIndex === 4) {
         return 'background-color: rgba(255, 106, 0,.1);'
       }
       if (row['未写日志明细'] && columnIndex === 5) {

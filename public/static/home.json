@@ -18,12 +18,8 @@
   {
     "title": "本地工具",
     "links": [{
-      "title": "日考勤计算工具",
+      "title": "考勤计算工具",
       "path":"/journal",
-      "description": "一个读取Excel文件处理数据的系统"
-    }, {
-      "title": "月考勤计算工具",
-      "path":"/mournal",
       "description": "一个读取Excel文件处理数据的系统"
     }]
   },
