@@ -330,7 +330,7 @@ export default {
           this.resultCountData[n].dinnerAmount += (isDinner * mtUnit)
           this.resultCountData[n].restCount += restCount
           this.resultCountData[n].restAmount += (restCount * mtUnit)
-          this.resultCountData[n].mealTotal += (this.resultCountData[n].lunchAmount + this.resultCountData[n].dinnerAmount + this.resultCountData[n].restAmount)
+          this.resultCountData[n].mealTotal += (restCount * mtUnit + isLunch * mtUnit + isDinner * mtUnit)
           if (downText === '缺' || upText === '缺') {
             this.resultCountData[n].remark = '有忘记打卡'
           }

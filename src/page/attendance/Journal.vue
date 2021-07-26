@@ -17,13 +17,18 @@
           <input ref="journalInput" class="upload-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" type='file' @change="importJournal">
         </el-form-item>
 
-        <el-form-item label="打卡文件" class="upload-item">
-          <el-input style="width:300px" readonly placeholder="请选择打卡文件" v-model="form.clock">
+        <el-form-item label="打卡统计文件" class="upload-item">
+          <el-input style="width:300px" readonly placeholder="请选择打卡统计文件" v-model="form.clock">
             <template slot="append"><a class="theme-color" href="javascript:;">选择</a></template>
           </el-input>
           <input ref="clockInput" class="upload-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" type='file' @change="importClock">
         </el-form-item>
-
+        <el-form-item label="打开地点文件" class="upload-item">
+          <el-input style="width:300px" readonly placeholder="请选择打开地点文件" v-model="form.address">
+            <template slot="append"><a class="theme-color" href="javascript:;">选择</a></template>
+          </el-input>
+          <input ref="addressInput" class="upload-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" type='file' @change="addressClock">
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="exportTable">导出</el-button>
           <el-button @click="clear">重置</el-button>
@@ -67,6 +72,14 @@
             </el-table-column>
             <el-table-column align="center" prop="考勤结果" label="考勤结果" width="200"></el-table-column>
             <el-table-column align="center" prop="打卡" label="打卡地址" width="340"></el-table-column>
+            <el-table-column align="left" label="打卡明细" width="500">
+              <template slot-scope="{row}" v-if="addressMap[row['姓名']]">
+                <div class="address-detail" v-for="(item,i) in addressMap[row['姓名']]" :key="i">
+                  <span>{{item.time}}</span>
+                  <span>{{item.address}}</span>
+                </div>
+              </template>
+            </el-table-column>
             <el-table-column align="center" prop="未写日志明细" label="未写日志明细" width="200">
               <template slot-scope="{row}" v-if="row['未写日志明细']">{{$lib.dateFormate(new Date(form.date), 'M/DD')}}</template>
             </el-table-column>
@@ -97,6 +110,7 @@ export default {
         day: 1,
         date: '',
         clock: '',
+        address: '',
         journal: ''
       },
       anormalError: [
@@ -104,7 +118,8 @@ export default {
       ],
       resultList: [],
       users: [],
-      showExpand: true
+      showExpand: true,
+      addressMap: {}
     }
   },
   created () {
@@ -117,8 +132,10 @@ export default {
       this.resultList = []
       this.form.clock = ''
       this.form.journal = ''
+      this.form.address = ''
       this.$refs.journalInput.value = ''
       this.$refs.clockInput.value = ''
+      this.$refs.addressInput.value = ''
       this.initDate()
       this.initUser()
     },
@@ -172,6 +189,31 @@ export default {
             return item
           })
         })
+      })
+    },
+    addressClock (e) {
+      var f = e.target.files[0]
+      this.form.address = f.name
+      this.$biz.readExcel(f, data => {
+        let dates = this.$biz.dealMTXName(f.name)
+        let date = this.$lib.dateFormate(new Date(this.form.date), 'YYYY-MM-DD')
+        if (!dates.includes(date)) {
+          this.$message.info(`${f.name}表中并没有${date}时间的考勤数据`)
+          return
+        }
+        let [r, a, t, n] = this.$biz.getTitleKey(data, ['打卡结果', '打卡地址', '打卡时间', '姓名'])
+        let resultMap = {}
+        for (let i = 0; i < data.length; i++) {
+          if (i <= 2) continue
+          const ele = data[i]
+          if (this.$lib.dateFormate(new Date(ele[t]), 'YYYY-MM-DD') !== date) continue
+          if (!Object.hasOwnProperty.call(resultMap, ele[n])) resultMap[ele[n]] = []
+          if (ele[r] === '外勤') {
+            resultMap[ele[n]].push({ time: ele[t], address: ele[a] })
+          }
+        }
+        console.log(resultMap)
+        this.addressMap = resultMap
       })
     },
     importJournal (e) {
@@ -250,7 +292,6 @@ export default {
       }
       this.showTable = true
       this.$biz.readExcel(f, data => {
-        console.log(data)
         this.resultList = []
         let totalMap = {}; let nameKey = ''; let anaomalrKey = ''
         let dday = this.$lib.dateFormate(new Date(this.form.date), 'DD')
@@ -369,4 +410,15 @@ export default {
 </script>
 
 <style lang="scss">
+.address-detail {
+  display: flex;
+  > span {
+    &:first-child {
+      width: 140px;
+    }
+    &:nth-child(2) {
+      flex: 1;
+    }
+  }
+}
 </style>

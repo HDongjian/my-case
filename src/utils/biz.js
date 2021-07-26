@@ -114,6 +114,20 @@ export default {
       dealNumberDate (number) {
         let result = [number.substring(0, 4), number.substring(4, 6), number.substring(6, 8)]
         return result.join('-')
+      },
+      getTitleKey (data, names) {
+        for (let i = 0; i < data.length; i++) {
+          const element = data[i]
+          if (i < 3) {
+            for (const key in element) {
+              names = names.map(item => {
+                item = element[key] === item ? key : item
+                return item
+              })
+            }
+          }
+        }
+        return names
       }
     }
   }
