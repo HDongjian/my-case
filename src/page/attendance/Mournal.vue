@@ -33,8 +33,8 @@
           <el-table-column align="center" label="考勤情况">
             <el-table-column align="center" width="30" :prop="day" v-for="(day,i) in days" :key="i" :label="day">
               <template v-if="form.journal&&resultMap[row['姓名']]&&resultMap[row['姓名']][day]" slot-scope="{row}">
-                <p @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='上午'" class="day-error-item">{{resultMap[row['姓名']][day].upText}}</p>
-                <p @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='下午'" class="day-error-item">{{resultMap[row['姓名']][day].downText}}</p>
+                <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='上午'" class="day-error-item">{{resultMap[row['姓名']][day].upText}}</p>
+                <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='下午'" class="day-error-item">{{resultMap[row['姓名']][day].downText}}</p>
               </template>
             </el-table-column>
           </el-table-column>
@@ -127,6 +127,13 @@
         <el-button type="primary" @click="dayClose">确 定</el-button>
       </span>
     </el-dialog>
+    <div class="right-menu" @contextmenu.prevent='rightMenuContext' :style="rightMenuStyle">
+      <div @click="changeStatus(item)" class="items" v-for="(item,i) in rightMenuList" :key="i" v-show="dayPart===item.part">
+        <span>{{item.upText||item.downText}}</span>
+        <span>{{dayPart==='上午'?'午餐':'晚餐'}}{{item.lunchCount||item.dinnerCount||0}}</span>
+      </div>
+      <div class="items" @click="changeStatus({})"><span>取消</span></div>
+    </div>
   </div>
 </template>
 
@@ -153,7 +160,32 @@ export default {
       dayPart: '',
       dayRowOptions: ['√', '休', '迟', '差', '早', '缺', '年', '外', '事', '出', '无'],
       resultMap: {},
-      resultCountData: {}
+      resultCountData: {},
+      rightMenu: {
+        x: 0,
+        y: 0
+      },
+      rightMenuList: [
+        { upText: '√', lunchCount: 1, part: '上午' },
+        { upText: '事', lunchCount: 0, part: '上午' },
+        { upText: '年', lunchCount: 0, part: '上午' },
+        { upText: '调', lunchCount: 0, part: '上午' },
+        { upText: '差', lunchCount: 0, part: '上午' },
+        { downText: '√', dinnerCount: 0, part: '下午' },
+        { downText: '事', dinnerCount: 0, part: '下午' },
+        { downText: '调', dinnerCount: 0, part: '下午' },
+        { downText: '年', dinnerCount: 0, part: '下午' },
+        { downText: '差', dinnerCount: 0, part: '下午' }
+      ]
+    }
+  },
+  computed: {
+    rightMenuStyle () {
+      return {
+        left: this.rightMenu.x + 'px',
+        top: this.rightMenu.y + 'px',
+        display: this.rightMenu.x || this.rightMenu.y ? 'block' : 'none'
+      }
     }
   },
   created () {
@@ -169,6 +201,25 @@ export default {
     }
   },
   methods: {
+    classContextMenu (row, part, e) {
+      e.stopPropagation()
+      this.dayRow = row
+      this.dayPart = part
+      this.rightMenu.x = e.clientX
+      this.rightMenu.y = e.clientY
+      console.log(this.rightMenu)
+    },
+    rightMenuContext (event) {
+      event.stopPropagation()
+    },
+    changeStatus (item) {
+      for (const key in this.dayRow) {
+        if (Object.hasOwnProperty.call(item, key)) {
+          this.$set(this.dayRow, key, item[key])
+        }
+      }
+      this.rightMenu = { x: 0, y: 0 }
+    },
     clear () {
       this.form.clock = ''
       this.form.journal = ''

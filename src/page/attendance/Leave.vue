@@ -1,5 +1,5 @@
 <template>
-  <div class="journal layout mournal">
+  <div class="journal layout">
     <my-header :title="$route.meta.title" :menus="$store.state.atTmenus"></my-header>
     <div class="layout-content">
       <el-form :inline="true" :model="form" class="journal-form">

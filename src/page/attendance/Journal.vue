@@ -23,7 +23,7 @@
           </el-input>
           <input ref="clockInput" class="upload-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" type='file' @change="importClock">
         </el-form-item>
-        <el-form-item label="打开地点文件" class="upload-item">
+        <el-form-item label="打卡地点文件" class="upload-item">
           <el-input style="width:300px" readonly placeholder="请选择打开地点文件" v-model="form.address">
             <template slot="append"><a class="theme-color" href="javascript:;">选择</a></template>
           </el-input>

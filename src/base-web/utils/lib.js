@@ -87,42 +87,21 @@
      * @param {string} fmt 要转换为的格式，默认 yyy-MM-dd HH:mm:ss
      */
     handleDate (date, fmt) {
-      if (!date) {
+      if (!date) return date
+      if (/^\d{1,2}\/\d{1,2}$/.test(date)) {
         return date
       }
       date = date.trim ? date.trim() : date
       if (/^[\d.]+$/.test(date)) {
         let dateNum = parseFloat(date)
-        // 大于 1000 万说明是一个毫秒数，直接解析并转换为指定格式即可
         if (dateNum > 10000000) {
           return this.dateFormate(dateNum, fmt)
         }
-        // 否则认为这个是一个 Excel 格式的日期
         date = this.formatExcelDate(dateNum, fmt)
       } else {
-        // 处理中文冒号，和 yyyy/MM/dd 格式的问题
         date = date.replace(/：/g, ':').replace(/\//g, '-')
       }
-      // 将不规则的格式，例如 "2020-1-1     1:3:3" 转换成 yyyy-MM-dd HH:mm:ss
-      // 再转为 Date 对象进行指定的格式化
       return date
-      // let dtPars = date.split(/\s+/g)
-      // let dPars = dtPars[0].split('-')
-      // dPars[1] = this.padding2(dPars[1])
-      // dPars[2] = this.padding2(dPars[2])
-      // dtPars[0] = dPars.join('-')
-      // if (!dtPars[1]) {
-      //   dtPars[1] = '00:00:00'
-      // } else {
-      //   let tPars = dtPars[1].split(':')
-      //   tPars[0] = this.padding2(tPars[0])
-      //   // 支持分缺失
-      //   tPars[1] = this.padding2(tPars[1] || '00')
-      //   // 支持秒缺失
-      //   tPars[2] = this.padding2(tPars[2] || '00')
-      //   dtPars[1] = tPars.join(':')
-      // }
-      // return this.dateFormate(new Date(dtPars.join(' ')), fmt)
     },
 
     /**

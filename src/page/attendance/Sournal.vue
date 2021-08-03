@@ -1,5 +1,5 @@
 <template>
-  <div class="journal layout mournal">
+  <div class="journal layout">
     <my-header :title="$route.meta.title" :menus="$store.state.atTmenus"></my-header>
     <div class="layout-content">
       <el-form :inline="true" :model="form" class="journal-form">
@@ -114,7 +114,8 @@ export default {
             resultMap[item[name]] = resultMap[item[name]].concat(dt)
           }
           if (Object.hasOwnProperty.call(item, clock) && Object.hasOwnProperty.call(item, name)) {
-            clockMap[item[name]].push(this.$lib.handleDate(item[clock], 'MM/DD'))
+            console.log(item[clock], this.$lib.handleDate(item[clock], 'YYYY-MM-DD'))
+            clockMap[item[name]].push(this.$lib.handleDate(item[clock], 'M/DD'))
           }
         }
         this.users = this.users.map(item => {
