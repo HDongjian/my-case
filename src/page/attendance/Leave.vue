@@ -186,7 +186,7 @@ export default {
       let result = row.map(item => {
         let { start, end } = item
         if (this.$lib.dateFormate(start, 'YYYY-MM-DD') === this.$lib.dateFormate(end, 'YYYY-MM-DD')) {
-          return this.$lib.dateFormate(start, 'YYYY.MM.DD/HH:mm') + '-' + this.$lib.dateFormate(end, 'HH:mm')
+          return this.$lib.dateFormate(start, 'YYYY.MM.DD/HH:mm') + ' - ' + this.$lib.dateFormate(end, 'HH:mm')
         } else {
           return this.$lib.dateFormate(start, 'YYYY.MM.DD/HH:mm') + '-' + this.$lib.dateFormate(end, 'YYYY.MM.DD/HH:mm')
         }

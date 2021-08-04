@@ -69,7 +69,11 @@
             <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].mealTotal}}</template>
           </el-table-column>
           <el-table-column align="center" label="备注" width="200">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].remark}}<span v-if="resultCountData[row['姓名']].lateMin">，共计迟到{{resultCountData[row['姓名']].lateMin}}分钟</span> </template>
+            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">
+              <span>{{remark[row['姓名']]}}</span>
+              <span v-if="remark[row['姓名']]&&resultCountData[row['姓名']].lateMin">，</span>
+              <span v-if="resultCountData[row['姓名']].lateMin">共计迟到{{resultCountData[row['姓名']].lateMin}}分钟</span>
+            </template>
           </el-table-column>
           <!-- <el-table-column align="center" prop="晚班餐补" label="晚班餐补" width="100">
             <template v-if="row['晚班餐补详情']" slot-scope="{row}">{{row['晚班餐补详情'].length}}</template>
@@ -130,7 +134,7 @@
     <div class="right-menu" @contextmenu.prevent='rightMenuContext' :style="rightMenuStyle">
       <div @click="changeStatus(item)" class="items" v-for="(item,i) in rightMenuList" :key="i" v-show="dayPart===item.part">
         <span>{{item.upText||item.downText}}</span>
-        <span>{{dayPart==='上午'?'午餐':'晚餐'}}{{item.lunchCount||item.dinnerCount||0}}</span>
+        <span>{{dayPart==='上午'?'午餐':'晚餐'}}{{item.isLunch||item.isDinner||0}}</span>
       </div>
       <div class="items" @click="changeStatus({})"><span>取消</span></div>
     </div>
@@ -158,7 +162,7 @@ export default {
       dayModal: false,
       dayRow: {},
       dayPart: '',
-      dayRowOptions: ['√', '休', '迟', '差', '早', '缺', '年', '外', '事', '出', '无'],
+      dayRowOptions: ['√', '休', '迟', '差', '早', '缺', '年', '外', '事', '出', '无', '病', '调'],
       resultMap: {},
       resultCountData: {},
       rightMenu: {
@@ -166,17 +170,22 @@ export default {
         y: 0
       },
       rightMenuList: [
-        { upText: '√', lunchCount: 1, part: '上午' },
-        { upText: '事', lunchCount: 0, part: '上午' },
-        { upText: '年', lunchCount: 0, part: '上午' },
-        { upText: '调', lunchCount: 0, part: '上午' },
-        { upText: '差', lunchCount: 0, part: '上午' },
-        { downText: '√', dinnerCount: 0, part: '下午' },
-        { downText: '事', dinnerCount: 0, part: '下午' },
-        { downText: '调', dinnerCount: 0, part: '下午' },
-        { downText: '年', dinnerCount: 0, part: '下午' },
-        { downText: '差', dinnerCount: 0, part: '下午' }
-      ]
+        { upText: '√', isLunch: 1, part: '上午' },
+        { upText: '事', isLunch: 0, part: '上午' },
+        { upText: '年', isLunch: 0, part: '上午' },
+        { upText: '调', isLunch: 0, part: '上午' },
+        { upText: '差', isLunch: 0, part: '上午' },
+        { upText: '丧', isLunch: 0, part: '上午' },
+        { upText: '病', isLunch: 0, part: '上午' },
+        { downText: '√', isDinner: 0, part: '下午' },
+        { downText: '事', isDinner: 0, part: '下午' },
+        { downText: '调', isDinner: 0, part: '下午' },
+        { downText: '年', isDinner: 0, part: '下午' },
+        { downText: '差', isDinner: 0, part: '下午' },
+        { downText: '病', isDinner: 0, part: '下午' },
+        { downText: '丧', isDinner: 0, part: '下午' }
+      ],
+      remark: {}
     }
   },
   computed: {
@@ -334,7 +343,10 @@ export default {
             }
             resultMap[nk][dtd]['upText'] = this.dealDayText(item[sr1])
             resultMap[nk][dtd]['downText'] = this.dealDayText(item[xr1])
-            if (item[gzsc] && item[gzsc] / 60 >= 4) {
+            if ((item[sr1] === '缺卡' || item[xr1] === '缺卡') && !this.remark[nk]) {
+              this.remark[nk] = '有忘记打卡'
+            }
+            if (item[gzsc] && item[gzsc] / 60 >= 4 && this.judegeLunch(item[sr1], item[xr1])) {
               resultMap[nk][dtd]['isLunch'] = 1
             }
             if (item[xt1] && this.form.date) {
@@ -345,9 +357,19 @@ export default {
             }
           }
         }
+        console.log(this.remark)
         this.resultMap = resultMap
-        this.dealCountData()
+        this.dealCountData(true)
       })
+    },
+    judegeLunch (start, end) {
+      let error = ['出差', '调休', '假']
+      for (const item of error) {
+        if (start.indexOf(item) >= 0 && end.indexOf(item) >= 0) {
+          return false
+        }
+      }
+      return true
     },
     dealCountData () {
       this.resultCountData = {}
