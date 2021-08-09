@@ -23,66 +23,60 @@
         </el-form-item>
       </el-form>
       <div class="table" style="height: calc(100% - 50px);">
-        <el-table border :row-class-name="rowStyle" :cell-style="cellStyle" :span-method="objectSpanMethod" height="100%" v-if="showTable" ref="table" :data="users">
-          <el-table-column fixed="left" align="center" label="序号" width="50">
-            <template slot-scope="{$index}">{{Math.ceil(($index+1)/2)}}</template>
-          </el-table-column>
-          <el-table-column fixed="left" align="center" prop="部门" label="部门" width="100"></el-table-column>
-          <el-table-column fixed="left" align="center" prop="姓名" label="姓名" width="100"></el-table-column>
-          <el-table-column fixed="left" align="center" prop="part" label="时间" width="80"></el-table-column>
-          <el-table-column align="center" label="考勤情况">
-            <el-table-column align="center" width="30" :prop="day" v-for="(day,i) in days" :key="i" :label="day">
-              <template v-if="form.journal&&resultMap[row['姓名']]&&resultMap[row['姓名']][day]" slot-scope="{row}">
-                <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='上午'" class="day-error-item">{{resultMap[row['姓名']][day].upText}}</p>
-                <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='下午'" class="day-error-item">{{resultMap[row['姓名']][day].downText}}</p>
+        <el-table border :row-class-name="rowStyle" :cell-style="cellStyle" :span-method="objectSpanMethod" height="100%" v-if="showTable" ref="mournal" :data="users">
+          <el-table-column align="center" type="index" :label="`${this.$lib.dateFormate(form.day, 'YYYY年MM月')}最终版`">
+            <el-table-column fixed="left" align="center" label="序号" width="50">
+              <template slot-scope="{$index}">{{Math.ceil(($index+1)/2)}}</template>
+            </el-table-column>
+            <el-table-column fixed="left" align="center" prop="部门" label="部门" width="100"></el-table-column>
+            <el-table-column fixed="left" align="center" prop="姓名" label="姓名" width="100"></el-table-column>
+            <el-table-column fixed="left" align="center" prop="part" label="时间" width="80"></el-table-column>
+            <el-table-column align="center" label="考勤情况">
+              <el-table-column align="center" width="30" :prop="day" v-for="(day,i) in days" :key="i" :label="day">
+                <template v-if="form.journal&&resultMap[row['姓名']]&&resultMap[row['姓名']][day]" slot-scope="{row}">
+                  <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='上午'" class="day-error-item">{{resultMap[row['姓名']][day].upText}}</p>
+                  <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='下午'" class="day-error-item">{{resultMap[row['姓名']][day].downText}}</p>
+                </template>
+              </el-table-column>
+            </el-table-column>
+            <el-table-column align="center" label="本月出勤" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].attendanceDays}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="全勤计数" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].fullAattendance}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="全勤补贴" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].fullAattendance*50}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="午餐餐补天数" width="120">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].lunchCount}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="午餐金额总计" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].lunchAmount}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="晚餐餐补天数" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].dinnerCount}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="晚餐金额总计" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].dinnerAmount}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="加班餐补天数" width="120">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].restCount}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="加班金额总计" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].restAmount}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="餐补总计" width="100">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].mealTotal}}</template>
+            </el-table-column>
+            <el-table-column align="center" label="备注" width="200">
+              <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">
+                <span>{{remark[row['姓名']]}}</span>
+                <span v-if="remark[row['姓名']]&&resultCountData[row['姓名']].lateMin">，</span>
+                <span v-if="resultCountData[row['姓名']].lateMin">共计迟到{{resultCountData[row['姓名']].lateMin}}分钟</span>
               </template>
             </el-table-column>
           </el-table-column>
-          <el-table-column align="center" label="本月出勤" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].attendanceDays}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="全勤计数" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].fullAattendance}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="全勤补贴" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].fullAattendance*50}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="午餐餐补天数" width="120">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].lunchCount}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="午餐金额总计" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].lunchAmount}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="晚餐餐补天数" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].dinnerCount}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="晚餐金额总计" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].dinnerAmount}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="加班餐补天数" width="120">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].restCount}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="加班金额总计" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].restAmount}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="餐补总计" width="100">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">{{resultCountData[row['姓名']].mealTotal}}</template>
-          </el-table-column>
-          <el-table-column align="center" label="备注" width="200">
-            <template v-if="resultCountData[row['姓名']]" slot-scope="{row}">
-              <span>{{remark[row['姓名']]}}</span>
-              <span v-if="remark[row['姓名']]&&resultCountData[row['姓名']].lateMin">，</span>
-              <span v-if="resultCountData[row['姓名']].lateMin">共计迟到{{resultCountData[row['姓名']].lateMin}}分钟</span>
-            </template>
-          </el-table-column>
-          <!-- <el-table-column align="center" prop="晚班餐补" label="晚班餐补" width="100">
-            <template v-if="row['晚班餐补详情']" slot-scope="{row}">{{row['晚班餐补详情'].length}}</template>
-          </el-table-column>
-          <el-table-column align="center" prop="晚班餐补详情" label="晚班餐补详情" width="200">
-            <template v-if="row['晚班餐补详情']" slot-scope="{row}">
-              <p v-for="(item,i) in row['晚班餐补详情']" :key="i">{{item}}</p>
-            </template>
-          </el-table-column> -->
         </el-table>
       </div>
     </div>
@@ -199,7 +193,6 @@ export default {
   },
   created () {
     this.initDate()
-    this.initUser()
   },
   watch: {
     resultMap: {
@@ -216,7 +209,6 @@ export default {
       this.dayPart = part
       this.rightMenu.x = e.clientX
       this.rightMenu.y = e.clientY
-      console.log(this.rightMenu)
     },
     rightMenuContext (event) {
       event.stopPropagation()
@@ -261,9 +253,10 @@ export default {
     },
     exportTable () {
       // var table1 = document.querySelector('#table1')
-      var sheet = XLSX.utils.table_to_sheet(this.$refs.table.$el)// 将一个table对象转换成一个sheet对象
+      console.log(this.$refs.mournal.$el)
+      var sheet = XLSX.utils.table_to_sheet(this.$refs.mournal.$el)// 将一个table对象转换成一个sheet对象
       let fileName = `${this.$lib.dateFormate(new Date(this.form.day), 'YYYY-MM')}考勤表最终版-${this.$lib.dateFormate(new Date(), 'YYYY年MM月DD日 HH时mm分ss秒')}.xlsx`
-      let sheetName = this.$lib.dateFormate(this.form.day, 'YYYY年MM月')
+      let sheetName = this.$lib.dateFormate(this.form.day, 'YYYY-MM')
       let Sheets = {}; let SheetNames = []
       Sheets[sheetName] = sheet
       SheetNames.push(sheetName)
@@ -363,7 +356,8 @@ export default {
       })
     },
     judegeLunch (start, end) {
-      let error = ['出差', '调休', '假']
+      if (!start || !end) return false
+      let error = ['出', '调', '假', '事', '年', '差', '病', '丧', '缺']
       for (const item of error) {
         if (start.indexOf(item) >= 0 && end.indexOf(item) >= 0) {
           return false
@@ -390,15 +384,17 @@ export default {
           }
         }
         for (const d in this.resultMap[n]) {
-          let { cdm, downText, upText, isDinner, isLunch, mtUnit, restCount } = this.resultMap[n][d]
+          let { cdm, downText, upText, isDinner, isLunch, mtUnit, restCount, up1Result, down1Result } = this.resultMap[n][d]
           if (this.judgeAttend(downText, upText)) {
             this.resultCountData[n].attendanceDays++
           }
           if ((downText !== '休' && upText !== '休') && (downText !== '√' || upText !== '√')) {
             this.resultCountData[n].fullAattendance = 0
           }
-          this.resultCountData[n].lunchCount += isLunch
-          this.resultCountData[n].lunchAmount += (isLunch * mtUnit)
+          if (this.judegeLunch(up1Result, down1Result)) {
+            this.resultCountData[n].lunchCount += isLunch
+            this.resultCountData[n].lunchAmount += (isLunch * mtUnit)
+          }
           this.resultCountData[n].dinnerCount += isDinner
           this.resultCountData[n].dinnerAmount += (isDinner * mtUnit)
           this.resultCountData[n].restCount += restCount
