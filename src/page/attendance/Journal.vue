@@ -294,7 +294,7 @@ export default {
       this.$biz.readExcel(f, data => {
         this.resultList = []
         let totalMap = {}; let nameKey = ''; let anaomalrKey = ''
-        let dday = this.$lib.dateFormate(new Date(this.form.date), 'DD')
+        let dday = this.$lib.dateFormate(new Date(this.form.date), 'D')
 
         for (let i = 0; i < data.length; i++) {
           const element = data[i]
