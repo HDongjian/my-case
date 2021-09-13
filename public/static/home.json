@@ -21,6 +21,10 @@
       "title": "考勤计算工具",
       "path":"/journal",
       "description": "一个读取Excel文件处理数据的系统"
+    },{
+      "title": "字符画",
+      "path":"/ascii-painting",
+      "description": "基于ascii实现的视频解析字符画"
     }]
   },
   {
