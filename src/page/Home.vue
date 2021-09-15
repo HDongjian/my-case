@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <my-header title="首页"></my-header>
+    <my-header title="大家好，这是一个无聊的导航页面"></my-header>
     <div class="content">
       <div class="card-content">
         <el-row :gutter="16">
@@ -31,7 +31,7 @@
           </div>
           <div class="we-chart">
             <img src="../assets/my-wechart.jpg" alt="二维码">
-            <span>可以加微信</span>
+            <span>可以加微信，不加也行</span>
           </div>
         </div>
       </div>
@@ -43,7 +43,7 @@
 export default {
   path: '/',
   name: 'home',
-  title: '首页',
+  title: '大家好，这是一个无聊的导航页面',
   data () {
     return {
       links: []
@@ -147,7 +147,7 @@ export default {
     height: 70px;
     padding: 10px 0;
     .f-content {
-      width: 340px;
+      width: 380px;
       margin: 0 auto;
       > div {
         display: inline-block;

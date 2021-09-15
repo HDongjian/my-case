@@ -1,7 +1,8 @@
 <template>
   <div class="ascii_painting layout">
     <my-header :title="$route.meta.title"></my-header>
-    <div class="layout-content">
+    <div class="layout-content" @click.stop="playOrStop">
+      <!-- <el-button @click="playOrStop">播放</el-button> -->
       <video ref="video" id="video" controls>
         <source src="../../assets/sly.mp4" type="video/mp4">
         您的浏览器不支持 HTML5 video 标签。
@@ -18,13 +19,27 @@ export default {
   title: '字符画',
   data () {
     return {
+      stop: true
     }
   },
   mounted () {
     this.init()
   },
   methods: {
+    playOrStop () {
+      if (this.stop) {
+        this.$refs.video.play()
+      } else {
+        this.$refs.video.pause()
+      }
+    },
     init () {
+      const loading = this.$loading({
+        lock: true,
+        text: '加载完毕点击播放',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.7)'
+      })
       var container = document.getElementById('container')
       var offScreenCvs = document.createElement('canvas')
       var offScreenCtx = offScreenCvs.getContext('2d', { alpha: false })
@@ -41,7 +56,10 @@ export default {
 
       var video = document.getElementById('video')
       video.crossOrigin = 'anonymous' // 允许跨域
-      video.onloadeddata = function () {
+      video.onloadeddata = () => {
+        setTimeout(() => {
+          loading.close()
+        }, 4000)
         offScreenCvsWidth = video.videoWidth
         offScreenCvsHeight = video.videoHeight
         var ratio = offScreenCvsWidth / offScreenCvsHeight
@@ -60,8 +78,8 @@ export default {
         imageData = offScreenCtx.getImageData(0, 0, offScreenCvsWidth, offScreenCvsHeight)
 
         if (fontSize < 12) {
-          container.style.transform = 'scale(' + (fontSize / 12) + ') translateY(-50%)'
-          container.style.transformOrigin = '50% 0'
+          // container.style.transform = 'scale(' + (fontSize / 12) + ') translate(-50%,-50%)'
+          // container.style.transformOrigin = '0 0'
           fontSize = 12
         }
         let height = offScreenCvsHeight / samplerStep * fontSize
@@ -77,18 +95,17 @@ export default {
         //   video.paused ? video.play() : video.pause()
         // }
 
-        video.onplay = function () {
-          stop = false
+        video.onplay = () => {
+          this.stop = false
           rendering = false
           requestAnimationFrame(tick)
         }
 
-        video.onpause = function () {
-          stop = true
+        video.onpause = () => {
+          this.stop = true
         }
       }
 
-      var stop = false
       var timeNow = Date.now()
       var timeLast = timeNow
       var delta = 0
@@ -98,9 +115,8 @@ export default {
       interval = 1000 / fps
 
       var rendering = false
-      var tick = function () {
-        // console.count()
-        if (stop) return false
+      var tick = () => {
+        if (this.stop) return false
         timeNow = Date.now()
         delta = timeNow - timeLast
         if (delta > interval) {
@@ -159,22 +175,36 @@ export default {
     font-size: 12px;
     font-family: 'SimHei', monospace;
     letter-spacing: 6px;
-    margin-top: 10px;
+    // margin-top: 10px;
     position: absolute;
-    right: 200px;
+    left: 50%;
     top: 50%;
+    // transform: translate(-50%, -50%);
+    // right: 200px;
+    // top: 50%;
+    transform: scale(.6) translate(-50%,-50%);
+    transform-origin:0 0;
+    margin: 0;
+    overflow: hidden;
     p {
       font-family: cursive;
     }
   }
+  @media screen and (max-width: 600px) {
+     #container {
+       transform: scale(.5) translate(-50%,-50%);
+     }
+  }
 
   video {
+    height: 0;
+    width: 0;
     outline: 0;
-    max-height: 300px;
-    position: absolute;
-    left: 200px;
-    top: 50%;
-    transform: translateY(-50%);
+    // max-height: 300px;
+    // position: absolute;
+    // left: 200px;
+    // top: 50%;
+    // transform: translateY(-50%);
   }
 }
 </style>

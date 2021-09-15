@@ -21,10 +21,6 @@
       "title": "考勤计算工具",
       "path":"/journal",
       "description": "一个读取Excel文件处理数据的系统"
-    },{
-      "title": "字符画",
-      "path":"/ascii-painting",
-      "description": "基于ascii实现的视频解析字符画"
     }]
   },
   {
@@ -48,7 +44,7 @@
     }]
   },
   {
-    "title": "工具",
+    "title": "在线工具",
     "links": [{
       "title": "tinypng",
       "address":"https://tinypng.com",
@@ -68,7 +64,7 @@
     }]
   },
   {
-    "title": "CSS",
+    "title": "CSS案例参考",
     "links": [{
       "title": "You-need-to-know-css",
       "address":"https://lhammer.cn/You-need-to-know-css/#/zh-cn/",
@@ -86,5 +82,29 @@
       "address":"http://cssicon.space/#/",
       "description": "使用CSS绘制各种图标"
     }]
+  },
+  {
+    "title": "闲来无事",
+    "links": [{
+      "title": "字符画",
+      "path":"/ascii-painting",
+      "description": "基于ascii实现的视频解析字符画"
+    },{
+      "title": "Grid布局",
+      "path":"/grid-base",
+      "description": "基于css的Grid布局实现的动态布局"
+    }]
+  },
+  {
+    "title": "展位招租",
+    "links": []
+  },
+  {
+    "title": "展位招租",
+    "links": []
+  },
+  {
+    "title": "展位招租",
+    "links": []
   }
 ]

@@ -1,5 +1,5 @@
-.bg-light{
-  background-color: rgba(255, 106, 0,.1);
+.bg-light {
+  background-color: rgba(255, 106, 0, .1);
 }
 
 $headerHeight:60px;
@@ -10,20 +10,24 @@ $headerHeight:60px;
   padding: 0 15px;
   background: $--color-primary;
   overflow: hidden;
+
   h2 {
     font-size: 18px;
     color: #fff;
     float: left;
   }
-  .el-menu{
+
+  .el-menu {
     float: right;
     background-color: transparent;
-    .el-menu-item{
-      color:#fff;
+
+    .el-menu-item {
+      color: #fff;
     }
   }
+
   .el-menu--horizontal {
-    > .el-menu-item{
+    >.el-menu-item {
       box-sizing: border-box;
     }
   }
@@ -42,8 +46,8 @@ $headerHeight:60px;
   }
 }
 
-.theme-color{
-  color:$--color-primary;
+.theme-color {
+  color: $--color-primary;
 }
 
 
@@ -65,55 +69,76 @@ $headerHeight:60px;
   }
 }
 
+@media screen and (max-width: 600px) {
+  * {
+    &::-webkit-scrollbar {
+      width: 2px;
+      height: 2px;
+    }
+  }
+}
+
 
 .journal {
   .layout-content {
     background: #fff;
-    .table{
-      .el-table__expanded-cell{
+
+    .table {
+      .el-table__expanded-cell {
         padding-top: 8px;
         padding-bottom: 8px;
       }
-      .el-form-item{
+
+      .el-form-item {
         display: flex;
         margin-bottom: 4px;
-        .el-form-item__label{
+
+        .el-form-item__label {
           float: inherit;
         }
-        .el-form-item__content{
-          flex:1;
+
+        .el-form-item__content {
+          flex: 1;
         }
       }
     }
-    .dd-div{
+
+    .dd-div {
       width: 80%;
     }
-    .dd-p{
+
+    .dd-p {
       display: flex;
-      span.time{
+
+      span.time {
         width: 150px;
       }
-      span.flag{
+
+      span.flag {
         width: 80px;
         text-align: left;
       }
-      .copy{
+
+      .copy {
         display: inline-block;
         width: 100px;
       }
     }
+
     .tips {
       line-height: 30px;
       margin-bottom: 15px;
       background-color: rgba(230, 162, 60, 0.1);
       border-radius: 4px;
       padding: 0 15px;
-      > p {
+
+      >p {
         display: inline-block;
         margin-right: 10px;
         font-size: 14px;
       }
     }
+
     .upload-item {
       .el-form-item__content {
         .upload-input {
@@ -130,7 +155,7 @@ $headerHeight:60px;
   }
 }
 
-.day-error-item{
+.day-error-item {
   height: 30px;
   line-height: 30px;
   overflow: hidden;
@@ -158,11 +183,13 @@ $headerHeight:60px;
     font-size: 16px;
     cursor: pointer;
     display: flex;
-    >span{
+
+    >span {
       flex: 1;
     }
+
     &:hover {
-      background-color: $--color-primary ;
+      background-color: $--color-primary;
       color: #fff;
     }
   }
