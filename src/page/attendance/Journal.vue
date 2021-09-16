@@ -114,8 +114,10 @@ export default {
         journal: ''
       },
       anormalError: [
-        '迟到次数', '迟到时长(分钟)', '严重迟到次数', '严重迟到时长', '旷工迟到天数', '早退次数', '早退时长(分钟)', '上班缺卡次数', '下班缺卡次数', '旷工天数', '出差时长', '外出时长', '调休(小时)', '调休(小时)', '婚假(小时)', '产假(小时)', '陪产假(小时)', '路途假(小时)', '丧假(小时)', '加班(小时)', '事假(小时)', '病假(小时)', '年假(小时)', '工作日（转调休）', '休息日（转调休）', '节假日（转调休）'
+        '迟到次数', '迟到时长(分钟)', '严重迟到次数', '严重迟到时长', '旷工迟到天数', '早退次数', '早退时长(分钟)', '上班缺卡次数', '下班缺卡次数', '旷工天数', '出差时长', '外出时长', '调休(小时)', '调休(小时)', '婚假(小时)', '产假(小时)', '陪产假(小时)', '路途假(小时)', '丧假(小时)', '加班(小时)', '事假(小时)', '病假(小时)', '年假(小时)', '工作日（转调休）', '休息日（转调休）', '节假日（转调休）', '迟到时长', '早退时长', '调休', '婚假', '产假', '陪产假', '路途假', '丧假', '加班', '事假', '病假', '年假'
       ],
+      minteKeys: [ '迟到时长', '早退时长' ],
+      hourKeys: [ '调休', '婚假', '产假', '陪产假', '路途假', '丧假', '加班', '事假', '病假', '年假' ],
       resultList: [],
       users: [],
       showExpand: true,
@@ -365,27 +367,26 @@ export default {
           let name = RegExp.$1; let unit = RegExp.$2
           name = name.replace('时长', '')
           result.push(`${name}${item.value}${unit}`)
-        }
-        if (item.key === '上班缺卡次数') {
+        } else if (item.key === '上班缺卡次数') {
           result.push('上班无记录')
-        }
-        if (item.key === '下班缺卡次数') {
+        } else if (item.key === '下班缺卡次数') {
           result.push('下班无记录')
-        }
-        if (item.key === '旷工天数') {
+        } else if (item.key === '旷工天数') {
           result.push(`旷工${item.value}天`)
-        }
-        if (item.key === '严重迟到时长') {
+        } else if (item.key === '严重迟到时长') {
           result.push(`严重迟到${item.value}`)
-        }
-        if (item.key === '旷工迟到天数') {
+        } else if (item.key === '旷工迟到天数') {
           result.push(`旷工迟到${item.value}天`)
-        }
-        if (item.key === '出差时长') {
+        } else if (item.key === '出差时长') {
           result.push(`出差${item.value}小时`)
-        }
-        if (item.key === '外出时长') {
+        } else if (item.key === '外出时长') {
           result.push(`外出${item.value}小时`)
+        } else if (item.key === '外出时长') {
+          result.push(`外出${item.value}小时`)
+        } else if (this.minteKeys.includes(item.key)) {
+          result.push(`${item.key}${item.value}分钟`)
+        } else if (this.hourKeys.includes(item.key)) {
+          result.push(`${item.key}${item.value}小时`)
         }
       }
       if (result.length) {
