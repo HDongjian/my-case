@@ -308,7 +308,7 @@ export default {
           }
           if (i <= 2) {
             for (const key in element) {
-              if (dday === element[key]) {
+              if (String(dday) === String(element[key])) {
                 anaomalrKey = key
               }
               totalMap[key] = element[key]
