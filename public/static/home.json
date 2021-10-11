@@ -3,11 +3,11 @@
     "title": "关于我的",
     "links": [{
       "title": "雅思小能手",
-      "address":"http://course.hdongyu.com",
+      "address":"https://course.hdongyu.com",
       "description": "基于Vue+IView+NodeJs搭建的教师课时安排、订单管理系统"
     }, {
       "title": "Hao's blog",
-      "address":"http://blog.hdongyu.com",
+      "address":"https://blog.hdongyu.com",
       "description": "基于Vuepress搭建的个人博客系统，主要为前端知识汇总"
     }, {
       "title": "Hve",

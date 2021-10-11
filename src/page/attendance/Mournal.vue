@@ -253,7 +253,6 @@ export default {
     },
     exportTable () {
       // var table1 = document.querySelector('#table1')
-      console.log(this.$refs.mournal.$el)
       var sheet = XLSX.utils.table_to_sheet(this.$refs.mournal.$el)// 将一个table对象转换成一个sheet对象
       let fileName = `${this.$lib.dateFormate(new Date(this.form.day), 'YYYY-MM')}考勤表最终版-${this.$lib.dateFormate(new Date(), 'YYYY年MM月DD日 HH时mm分ss秒')}.xlsx`
       let sheetName = this.$lib.dateFormate(this.form.day, 'YYYY-MM')
@@ -350,7 +349,6 @@ export default {
             }
           }
         }
-        console.log(this.remark)
         this.resultMap = resultMap
         this.dealCountData(true)
       })
