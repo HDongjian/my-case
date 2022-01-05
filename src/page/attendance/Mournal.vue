@@ -165,19 +165,21 @@ export default {
       },
       rightMenuList: [
         { upText: '√', isLunch: 1, part: '上午' },
+        { upText: '√', isLunch: 0, part: '上午' },
+        { upText: '迟', isLunch: 1, part: '上午' },
         { upText: '事', isLunch: 0, part: '上午' },
         { upText: '年', isLunch: 0, part: '上午' },
         { upText: '调', isLunch: 0, part: '上午' },
-        { upText: '差', isLunch: 0, part: '上午' },
-        { upText: '丧', isLunch: 0, part: '上午' },
+        // { upText: '差', isLunch: 0, part: '上午' },
+        // { upText: '丧', isLunch: 0, part: '上午' },
         { upText: '病', isLunch: 0, part: '上午' },
         { downText: '√', isDinner: 0, part: '下午' },
         { downText: '事', isDinner: 0, part: '下午' },
         { downText: '调', isDinner: 0, part: '下午' },
         { downText: '年', isDinner: 0, part: '下午' },
-        { downText: '差', isDinner: 0, part: '下午' },
-        { downText: '病', isDinner: 0, part: '下午' },
-        { downText: '丧', isDinner: 0, part: '下午' }
+        // { downText: '差', isDinner: 0, part: '下午' },
+        { downText: '病', isDinner: 0, part: '下午' }
+        // { downText: '丧', isDinner: 0, part: '下午' }
       ],
       remark: {}
     }
@@ -219,6 +221,9 @@ export default {
           this.$set(this.dayRow, key, item[key])
         }
       }
+      this.dayRow = { ...this.dayRow }
+      this.resultMap = { ...this.resultMap }
+      console.log(this.resultMap['李宗义'])
       this.rightMenu = { x: 0, y: 0 }
     },
     clear () {
@@ -230,9 +235,9 @@ export default {
       this.initUser()
     },
     initDate () {
-      const year = new Date().getFullYear()
-      const month = new Date().getMonth()
-      this.form.day = year + '-' + month
+      // const year = new Date().getFullYear()
+      const month = this.$lib.dateFormate(new Date(), 'D')
+      this.form.day = this.$lib.dateFormate(Date.now() - (month * 24 * 60 * 60 * 1000), 'YYYY-MM')
       this.form.date = '21:00'
       this.dateChange()
     },
@@ -350,6 +355,7 @@ export default {
           }
         }
         this.resultMap = resultMap
+        console.log(resultMap)
         this.dealCountData(true)
       })
     },
@@ -382,17 +388,17 @@ export default {
           }
         }
         for (const d in this.resultMap[n]) {
-          let { cdm, downText, upText, isDinner, isLunch, mtUnit, restCount, up1Result, down1Result } = this.resultMap[n][d]
+          let { cdm, downText, upText, isDinner, isLunch, mtUnit, restCount } = this.resultMap[n][d]
           if (this.judgeAttend(downText, upText)) {
             this.resultCountData[n].attendanceDays++
           }
           if ((downText !== '休' && upText !== '休') && (downText !== '√' || upText !== '√')) {
             this.resultCountData[n].fullAattendance = 0
           }
-          if (this.judegeLunch(up1Result, down1Result)) {
-            this.resultCountData[n].lunchCount += isLunch
-            this.resultCountData[n].lunchAmount += (isLunch * mtUnit)
-          }
+          // if (this.judegeLunch(up1Result, down1Result)) {
+          this.resultCountData[n].lunchCount += isLunch
+          this.resultCountData[n].lunchAmount += (isLunch * mtUnit)
+          // }
           this.resultCountData[n].dinnerCount += isDinner
           this.resultCountData[n].dinnerAmount += (isDinner * mtUnit)
           this.resultCountData[n].restCount += restCount
@@ -407,6 +413,7 @@ export default {
         }
       }
       this.resultCountData = { ...this.resultCountData }
+      console.log(this.resultCountData['李宗义'])
     },
     judgeAttend (text1, text2) {
       let errs = ['休', '事', '缺', '无', '年']
