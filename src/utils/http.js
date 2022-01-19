@@ -16,8 +16,8 @@ export default {
         url = url.substring(0, tpi - 1)
       }
 
-      let c = url.indexOf('?') === -1 ? '?' : '&'
-      request.url = `${url}${c}_t=${parseInt(new Date().getTime() / 1000, 10)}`
+      // let c = url.indexOf('?') === -1 ? '?' : '&'
+      // request.url = `${url}${c}_t=${parseInt(new Date().getTime() / 1000, 10)}`
 
       return request
     }, error => Promise.reject(error))

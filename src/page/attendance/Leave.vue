@@ -18,7 +18,7 @@
         </el-form-item>
       </el-form>
       <div class="table" style="height: calc(100% - 50px);">
-        <el-table :span-method="objectSpanMethod" border height="100%" ref="table" :data="rowsList">
+        <el-table border height="100%" ref="table" :data="rowsList">
           <el-table-column align="center" type="index" :label="`${this.$lib.dateFormate(form.day, 'YYYY年MM月')}请假明细表`">
             <el-table-column fixed="left" align="center" type="index" label="序号" width="50"></el-table-column>
             <el-table-column fixed="left" align="center" prop="部门" label="部门" width="100"></el-table-column>
@@ -86,9 +86,8 @@ export default {
       this.initUser()
     },
     initDate () {
-      const year = new Date().getFullYear()
       const month = new Date().getMonth()
-      this.form.day = year + '-' + month
+      this.form.day = this.$lib.dateFormate(Date.now() - (month * 24 * 60 * 60 * 1000), 'YYYY-MM')
       this.dateChange()
     },
     dateChange () {
@@ -156,16 +155,18 @@ export default {
       }
       return []
     },
-    initUser () {
-      this.$http.request({
-        method: 'get',
-        url: `/static/user.xlsx`,
-        responseType: 'blob'
-      }).then((res) => {
-        this.$biz.readExcel(res.data, data => {
-          this.users = data
-        })
-      })
+    async initUser () {
+      let data = await this.$biz.initUser()
+      this.users = data
+      // this.$http.request({
+      //   method: 'get',
+      //   url: `/static/user.xlsx`,
+      //   responseType: 'blob'
+      // }).then((res) => {
+      //   this.$biz.readExcel(res.data, data => {
+      //     this.users = data
+      //   })
+      // })
     },
     dealTypes (start, end, type, name, time) {
       if (start && end && type) {

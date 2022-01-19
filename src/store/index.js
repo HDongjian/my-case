@@ -6,6 +6,9 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     atTmenus: [{
+      name: '员工管理',
+      router: '/staff'
+    }, {
       name: '每日打卡日志统计',
       router: '/journal'
     }, {

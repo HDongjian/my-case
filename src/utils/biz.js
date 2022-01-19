@@ -2,6 +2,40 @@ import XLSX from 'xlsx'
 export default {
   install (Vue) {
     Vue.biz = Vue.prototype.$biz = {
+      initUser (no) {
+        const loading = Vue.prototype.$loading({
+          lock: true,
+          text: '加载中',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.7)'
+        })
+        return Vue.http.request({
+          method: 'get',
+          url: `/api/botostaff/list`
+        }).then((res) => {
+          setTimeout(() => {
+            loading.close()
+          }, 1000)
+          if (!res) return []
+          let data = res.data.data || []
+          // this.rows = data.sort((x, y) => x.staffDept.localeCompare(y.staffDept, 'zh'))
+          data = data.sort((x, y) => x.staffOrder - y.staffOrder)
+          if (no) {
+            return data
+          }
+          data = data.map(item => {
+            return {
+              '序号': item.staffOrder,
+              '部门': item.staffDept,
+              '姓名': item.staffName,
+              '打卡': item.staffLocation,
+              '上班时间': item.staffTime
+            }
+          })
+          // this.users = data
+          return data
+        })
+      },
       readExcel (f, callback) {
         const loading = Vue.prototype.$loading({
           lock: true,

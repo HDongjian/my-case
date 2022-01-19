@@ -66,9 +66,9 @@ export default {
       this.initUser()
     },
     initDate () {
-      const year = new Date().getFullYear()
       const month = new Date().getMonth()
-      this.form.day = year + '-' + month
+      this.form.day = this.$lib.dateFormate(Date.now() - (month * 24 * 60 * 60 * 1000), 'YYYY-MM')
+      console.log(this.form.day)
       this.form.date = '21:00'
       this.dateChange()
     },
@@ -143,16 +143,18 @@ export default {
       }
       return []
     },
-    initUser () {
-      this.$http.request({
-        method: 'get',
-        url: `/static/user.xlsx`,
-        responseType: 'blob'
-      }).then((res) => {
-        this.$biz.readExcel(res.data, data => {
-          this.users = data
-        })
-      })
+    async initUser () {
+      let data = await this.$biz.initUser()
+      this.users = data
+      // this.$http.request({
+      //   method: 'get',
+      //   url: `/static/user.xlsx`,
+      //   responseType: 'blob'
+      // }).then((res) => {
+      //   this.$biz.readExcel(res.data, data => {
+      //     this.users = data
+      //   })
+      // })
     }
   }
 }

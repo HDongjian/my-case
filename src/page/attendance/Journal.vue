@@ -116,8 +116,8 @@ export default {
       anormalError: [
         '迟到次数', '迟到时长(分钟)', '严重迟到次数', '严重迟到时长', '旷工迟到天数', '早退次数', '早退时长(分钟)', '上班缺卡次数', '下班缺卡次数', '旷工天数', '出差时长', '外出时长', '调休(小时)', '调休(小时)', '婚假(小时)', '产假(小时)', '陪产假(小时)', '路途假(小时)', '丧假(小时)', '加班(小时)', '事假(小时)', '病假(小时)', '年假(小时)', '工作日（转调休）', '休息日（转调休）', '节假日（转调休）', '迟到时长', '早退时长', '调休', '婚假', '产假', '陪产假', '路途假', '丧假', '加班', '事假', '病假', '年假'
       ],
-      minteKeys: [ '迟到时长', '早退时长' ],
-      hourKeys: [ '调休', '婚假', '产假', '陪产假', '路途假', '丧假', '加班', '事假', '病假', '年假' ],
+      minteKeys: ['迟到时长', '早退时长'],
+      hourKeys: ['调休', '婚假', '产假', '陪产假', '路途假', '丧假', '加班', '事假', '病假', '年假'],
       resultList: [],
       users: [],
       showExpand: true,
@@ -177,21 +177,28 @@ export default {
       this.$refs.clockInput.value = ''
       this.initUser()
     },
-    initUser () {
-      this.$http.request({
-        method: 'get',
-        url: `/static/user.xlsx`,
-        responseType: 'blob'
-      }).then((res) => {
-        this.$biz.readExcel(res.data, data => {
-          this.users = (data || []).map(item => {
-            item['上班时间'] = this.$lib.handleDate(item['上班时间'], 'HH:mm')
-            item.start = new Date(this.$lib.dateFormate(this.form.date, 'YYYY-MM-DD') + ' ' + item['上班时间']).getTime()
-            item.end = item.start + (this.form.day || 1) * 24 * 60 * 60 * 1000
-            return item
-          })
-        })
+    async initUser () {
+      let data = await this.$biz.initUser()
+      this.users = (data || []).map(item => {
+        item.start = new Date(this.$lib.dateFormate(this.form.date, 'YYYY-MM-DD') + ' ' + item['上班时间']).getTime()
+        item.end = item.start + (this.form.day || 1) * 24 * 60 * 60 * 1000
+        return item
       })
+      // this.$http.request({
+      //   method: 'get',
+      //   url: `/static/user.xlsx`,
+      //   responseType: 'blob'
+      // }).then((res) => {
+      //   this.$biz.readExcel(res.data, data => {
+      //     console.log(JSON.stringify(data))
+      //     this.users = (data || []).map(item => {
+      //       item['上班时间'] = this.$lib.handleDate(item['上班时间'], 'HH:mm')
+      //       item.start = new Date(this.$lib.dateFormate(this.form.date, 'YYYY-MM-DD') + ' ' + item['上班时间']).getTime()
+      //       item.end = item.start + (this.form.day || 1) * 24 * 60 * 60 * 1000
+      //       return item
+      //     })
+      //   })
+      // })
     },
     addressClock (e) {
       var f = e.target.files[0]

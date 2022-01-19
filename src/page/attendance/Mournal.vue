@@ -223,7 +223,6 @@ export default {
       }
       this.dayRow = { ...this.dayRow }
       this.resultMap = { ...this.resultMap }
-      console.log(this.resultMap['李宗义'])
       this.rightMenu = { x: 0, y: 0 }
     },
     clear () {
@@ -355,7 +354,6 @@ export default {
           }
         }
         this.resultMap = resultMap
-        console.log(resultMap)
         this.dealCountData(true)
       })
     },
@@ -413,7 +411,6 @@ export default {
         }
       }
       this.resultCountData = { ...this.resultCountData }
-      console.log(this.resultCountData['李宗义'])
     },
     judgeAttend (text1, text2) {
       let errs = ['休', '事', '缺', '无', '年']
@@ -437,18 +434,23 @@ export default {
       }
       return result
     },
-    initUser () {
-      this.$http.request({
-        method: 'get',
-        url: `/static/user.xlsx`,
-        responseType: 'blob'
-      }).then((res) => {
-        this.$biz.readExcel(res.data, data => {
-          this.users = data.reduce((pre, cur) => {
-            return pre.concat([{ ...cur, part: '上午' }, { ...cur, part: '下午' }])
-          }, [])
-        })
-      })
+    async initUser () {
+      let data = await this.$biz.initUser()
+      this.users = data.reduce((pre, cur) => {
+        return pre.concat([{ ...cur, part: '上午' }, { ...cur, part: '下午' }])
+      }, [])
+      // this.$http.request({
+      //   method: 'get',
+      //   url: `/static/user.xlsx`,
+      //   responseType: 'blob'
+      // }).then((res) => {
+      //   this.$biz.readExcel(res.data, data => {
+      //     this.users = data.reduce((pre, cur) => {
+      //       return pre.concat([{ ...cur, part: '上午' }, { ...cur, part: '下午' }])
+      //     }, [])
+      //     console.log(this.users)
+      //   })
+      // })
     },
     objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
       if (['餐补额度', '序号', '部门', '姓名', '本月出勤', '全勤计数', '全勤补贴', '午餐餐补天数', '金额总计', '午餐金额总计', '晚餐金额总计', '备注', '加班金额总计', '加班餐补天数', '餐补总计', '晚餐餐补天数'].includes(column.label)) {

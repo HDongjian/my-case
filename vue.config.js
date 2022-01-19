@@ -25,7 +25,14 @@ module.exports = {
       errors: true
     },
     hotOnly: false,
-    https: false
+    https: false,
+    proxy: {
+      '/api': {
+        // target: 'http://localhost:3010',
+        target: 'https://hdongyu.com',
+        changeOrigin: true
+      }
+    }
   },
   chainWebpack: (config) => {
     // set svg-sprite-loader

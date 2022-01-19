@@ -69,9 +69,8 @@ export default {
       this.initDate()
     },
     initDate () {
-      const year = new Date().getFullYear()
       const month = new Date().getMonth()
-      this.form.day = year + '-' + month
+      this.form.day = this.$lib.dateFormate(Date.now() - (month * 24 * 60 * 60 * 1000), 'YYYY-MM')
     },
     exportTable () {
       var sheet = XLSX.utils.table_to_sheet(this.$refs.table.$el)
