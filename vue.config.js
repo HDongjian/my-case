@@ -28,8 +28,8 @@ module.exports = {
     https: false,
     proxy: {
       '/api': {
-        // target: 'http://localhost:3010',
-        target: 'https://hdongyu.com',
+        target: 'http://localhost:3010',
+        // target: 'https://hdongyu.com',
         changeOrigin: true
       }
     }

@@ -33,6 +33,7 @@ export default {
             }
           })
           // this.users = data
+          data = data.sort((x, y) => x.staffOrder - y.staffOrder)
           return data
         })
       },

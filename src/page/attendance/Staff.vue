@@ -4,10 +4,12 @@
     <div class="layout-content">
       <div class="journal-form" style="margin-bottom:18px">
         <el-button type="primary" @click="add">新 增</el-button>
+        <el-button type="primary" @click="reset">重 置</el-button>
       </div>
       <div class="table" style="height: calc(100% - 50px);">
         <el-table :data="rows" border style="width: 100%" stripe>
-          <el-table-column align="center" type="index" label="序号" width="100"></el-table-column>
+          <!-- <el-table-column align="center" type="index" label="序号" width="100"></el-table-column> -->
+          <el-table-column align="center" prop="staffOrder" label="排序序号" width="100"></el-table-column>
           <el-table-column align="center" :formatter="PFormatterCommon" prop="staffDept" width="200" label="部门"></el-table-column>
           <el-table-column align="center" :formatter="PFormatterCommon" prop="staffName" label="姓名"></el-table-column>
           <el-table-column align="center" :formatter="PFormatterCommon" prop="staffLocation" label="打卡地点"></el-table-column>
@@ -85,6 +87,25 @@ export default {
     this.load()
   },
   methods: {
+    reset () {
+      const loading = this.$loading({
+        lock: true,
+        text: '加载中',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.7)'
+      })
+      return this.$http.request({
+        method: 'get',
+        url: `/api/botostaff/reset`
+      }).then((res) => {
+        setTimeout(() => {
+          loading.close()
+        }, 1000)
+        if (!res) return []
+        let data = res.data.data || []
+        this.rows = data
+      })
+    },
     async load () {
       this.rows = await this.$biz.initUser(true)
     },
@@ -98,7 +119,7 @@ export default {
       this.addModal = true
     },
     toDelete (row) {
-      this.$confirm('您确认要删除该链接吗?', '提示', {
+      this.$confirm('您确认要删除该员工吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
