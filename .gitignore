@@ -24,4 +24,4 @@ yarn-debug.log*
 *.sw*
 .project
 .settings/
-
+.history

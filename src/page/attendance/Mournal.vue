@@ -10,6 +10,9 @@
           <el-time-select @change="dateChange" style="width:100px" value-format="HH:mm" :picker-options="{ start: '18:00',step: '00:15',end: '23:00'}" v-model="form.date" placeholder="餐补计算时间">
           </el-time-select>
         </el-form-item>
+        <el-form-item label="自动保存(分钟)">
+           <el-input-number v-model="saveMin" controls-position="right" :min="0.5" :max="10" :step="0.5" @change="saveMinChange"></el-input-number>
+        </el-form-item>
         <el-form-item label="每日统计" class="upload-item">
           <el-input style="width:300px" readonly placeholder="每日统计" v-model="form.journal">
             <template slot="append"><a class="theme-color" href="javascript:;">选择</a></template>
@@ -33,7 +36,7 @@
             <el-table-column fixed="left" align="center" prop="part" label="时间" width="80"></el-table-column>
             <el-table-column align="center" label="考勤情况">
               <el-table-column align="center" width="30" :prop="day" v-for="(day,i) in days" :key="i" :label="day">
-                <template v-if="form.journal&&resultMap[row['姓名']]&&resultMap[row['姓名']][day]" slot-scope="{row}">
+                <template v-if="showPoint(row,day)" slot-scope="{row}">
                   <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='上午'" class="day-error-item">{{resultMap[row['姓名']][day].upText}}</p>
                   <p @contextmenu.prevent="classContextMenu(resultMap[row['姓名']][day],row.part,$event)" @click="dayOpen(resultMap[row['姓名']][day],row.part)" v-if="row.part==='下午'" class="day-error-item">{{resultMap[row['姓名']][day].downText}}</p>
                 </template>
@@ -181,7 +184,9 @@ export default {
         { downText: '病', isDinner: 0, part: '下午' }
         // { downText: '丧', isDinner: 0, part: '下午' }
       ],
-      remark: {}
+      remark: {},
+      saveId: {},
+      saveMin: 5
     }
   },
   computed: {
@@ -205,6 +210,44 @@ export default {
     }
   },
   methods: {
+    showPoint (row, day) {
+      return this.resultMap[row['姓名']] && this.resultMap[row['姓名']][day]
+    },
+    getSaveData () {
+      let mounth = this.$lib.dateFormate(this.form.day, 'YYYY-MM')
+      let data = localStorage.getItem(`mournal-${mounth}`)
+      if (!data) return
+      this.$confirm('本地有缓存，是否加载？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        data = JSON.parse(data)
+        this.resultMap = data
+        this.autoSave()
+      })
+    },
+    saveMinChange () {
+      this.saveId && clearInterval(this.saveId)
+      if (JSON.stringify(this.resultMap) !== '{}') {
+        this.autoSave()
+      }
+    },
+    autoSave () {
+      this.saveId = setInterval(() => {
+        const loading = this.$loading({
+          lock: true,
+          text: '自动保存中',
+          spinner: 'el-icon-loading',
+          background: 'rgba(255, 255, 255, 0.7)'
+        })
+        let mounth = this.$lib.dateFormate(new Date(), 'YYYY-MM')
+        localStorage.setItem(`mournal-${mounth}`, JSON.stringify(this.resultMap))
+        setTimeout(() => {
+          loading.close()
+        }, 1000)
+      }, this.saveMin * 60 * 1000)
+    },
     classContextMenu (row, part, e) {
       e.stopPropagation()
       this.dayRow = row
@@ -253,7 +296,8 @@ export default {
       this.showTable = false
       setTimeout(() => {
         this.showTable = true
-      }, 1)
+        this.getSaveData()
+      }, 1000)
     },
     exportTable () {
       // var table1 = document.querySelector('#table1')
@@ -354,7 +398,8 @@ export default {
           }
         }
         this.resultMap = resultMap
-        this.dealCountData(true)
+        this.autoSave()
+        this.dealCountData()
       })
     },
     judegeLunch (start, end) {
@@ -439,18 +484,6 @@ export default {
       this.users = data.reduce((pre, cur) => {
         return pre.concat([{ ...cur, part: '上午' }, { ...cur, part: '下午' }])
       }, [])
-      // this.$http.request({
-      //   method: 'get',
-      //   url: `/static/user.xlsx`,
-      //   responseType: 'blob'
-      // }).then((res) => {
-      //   this.$biz.readExcel(res.data, data => {
-      //     this.users = data.reduce((pre, cur) => {
-      //       return pre.concat([{ ...cur, part: '上午' }, { ...cur, part: '下午' }])
-      //     }, [])
-      //     console.log(this.users)
-      //   })
-      // })
     },
     objectSpanMethod ({ row, column, rowIndex, columnIndex }) {
       if (['餐补额度', '序号', '部门', '姓名', '本月出勤', '全勤计数', '全勤补贴', '午餐餐补天数', '金额总计', '午餐金额总计', '晚餐金额总计', '备注', '加班金额总计', '加班餐补天数', '餐补总计', '晚餐餐补天数'].includes(column.label)) {
