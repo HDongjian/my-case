@@ -234,7 +234,7 @@ export default {
           Jdata = Jdata.map(item => {
             item.content = ''
             for (const key in item) {
-              if (key.indexOf('工作') >= 0 || key.indexOf('任务') >= 0) {
+              if (key.indexOf('工作') >= 0 || key.indexOf('任务') >= 0 || key.indexOf('内容') >= 0) {
                 item.content += item[key]
               }
             }
