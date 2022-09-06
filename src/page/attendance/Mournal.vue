@@ -13,6 +13,9 @@
         <el-form-item label="自动保存(分钟)">
            <el-input-number v-model="saveMin" controls-position="right" :min="0.5" :max="10" :step="0.5" @change="saveMinChange"></el-input-number>
         </el-form-item>
+         <el-form-item>
+          <el-button type="primary" @click="toSave">保存</el-button>
+        </el-form-item>
         <el-form-item label="每日统计" class="upload-item">
           <el-input style="width:300px" readonly placeholder="每日统计" v-model="form.journal">
             <template slot="append"><a class="theme-color" href="javascript:;">选择</a></template>
@@ -186,7 +189,7 @@ export default {
       ],
       remark: {},
       saveId: {},
-      saveMin: 5
+      saveMin: 2
     }
   },
   computed: {
@@ -235,18 +238,21 @@ export default {
     },
     autoSave () {
       this.saveId = setInterval(() => {
-        const loading = this.$loading({
-          lock: true,
-          text: '自动保存中',
-          spinner: 'el-icon-loading',
-          background: 'rgba(255, 255, 255, 0.7)'
-        })
-        let mounth = this.$lib.dateFormate(new Date(), 'YYYY-MM')
-        localStorage.setItem(`mournal-${mounth}`, JSON.stringify(this.resultMap))
-        setTimeout(() => {
-          loading.close()
-        }, 1000)
+        this.toSave()
       }, this.saveMin * 60 * 1000)
+    },
+    toSave () {
+      const loading = this.$loading({
+        lock: true,
+        text: '自动保存中',
+        spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.7)'
+      })
+      let mounth = this.$lib.dateFormate(this.form.day, 'YYYY-MM')
+      localStorage.setItem(`mournal-${mounth}`, JSON.stringify(this.resultMap))
+      setTimeout(() => {
+        loading.close()
+      }, 500)
     },
     classContextMenu (row, part, e) {
       e.stopPropagation()
@@ -326,7 +332,7 @@ export default {
       var f = e.target.files[0]
       this.form.journal = f.name
       this.$biz.readExcel(f, data => {
-        let [n, d, b, st1, sr1, xt1, xr1, kqz, cdm, gzsc] = this.getTitleKey(data, ['姓名', '日期', '班次', '上班1打卡时间', '上班1打卡结果', '下班1打卡时间', '下班1打卡结果', '考勤组', '迟到时长(分钟)', '工作时长(分钟)'])
+        let [n, d, b, st1, sr1, xt1, xr1, kqz, cdm, gzsc] = this.getTitleKey(data, ['姓名', '日期', '班次', '上班1打卡时间', '上班1打卡结果', '下班1打卡时间', '下班1打卡结果', '考勤组', '迟到时长', '工作时长'])
         let resultMap = {}
         for (let i = 0; i < data.length; i++) {
           const item = data[i]
@@ -449,10 +455,12 @@ export default {
           this.resultCountData[n].mealTotal += (restCount * mtUnit + isLunch * mtUnit + isDinner * mtUnit)
           if (downText === '缺' || upText === '缺') {
             this.resultCountData[n].remark = '有忘记打卡'
+            this.remark[n] = '有忘记打卡'
           }
           if (cdm) {
             this.resultCountData[n].lateMin += Number(cdm)
           }
+          console.log(cdm)
         }
       }
       this.resultCountData = { ...this.resultCountData }
